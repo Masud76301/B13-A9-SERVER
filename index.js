@@ -28,9 +28,14 @@ async function run() {
     const db= client.db('sportcove');
     const facilityCollection = db.collection("facility");
 
+    app.get('/facility',async(req,res)=>{
+        const result = await facilityCollection.find().toArray();
+        res.json(result);
+    })
+
     app.post('/facility',async(req,res)=>{
         const facilityData = req.body;
-        console.log(facilityData);
+        
         const result = await facilityCollection.insertOne(facilityData);
         res.json(result)
     })
