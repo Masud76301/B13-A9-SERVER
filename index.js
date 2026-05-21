@@ -47,6 +47,12 @@ async function run() {
         res.json(result);
     })
 
+    app.get('/booking/:userId',async(req,res)=>{
+        const {userId} =req.params;
+        const result = await bookingCollection.find({userId}).toArray();
+        res.json(result);
+    })
+
     app.get('/facility/:id',async(req,res)=>{
         const {id}=req.params
         const result = await facilityCollection.findOne({_id: new ObjectId(id)})
@@ -69,6 +75,11 @@ async function run() {
         res.json(result)
     })
 
+    app.delete('/booking/:bookingId', async(req,res)=>{
+        const {bookingId}= req.params;
+        const result = await bookingCollection.deleteOne({_id: new ObjectId(bookingId)});
+        res.json(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
