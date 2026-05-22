@@ -17,11 +17,11 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  } 
 });
 
 const JWKS = createRemoteJWKSet(
-    new URL("http://localhost:3000/api/auth/jwks")
+    new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
 )
 
 const verifyToken = async (req,res,next)=>{
@@ -46,7 +46,7 @@ const verifyToken = async (req,res,next)=>{
 async function run() {
   try {
     
-    await client.connect();
+    // await client.connect();
     
     const db= client.db('sportcove');
     const facilityCollection = db.collection("facility");
@@ -57,20 +57,19 @@ async function run() {
         res.json(result);
     })
 
-    app.post('/facility',async(req,res)=>{
+    app.post('/facility',verifyToken, async(req,res)=>{
         const facilityData = req.body;
-        
         const result = await facilityCollection.insertOne(facilityData);
         res.json(result)
     })
 
-    app.post('/booking',async(req,res)=>{
+    app.post('/booking', verifyToken,async(req,res)=>{
         const bookingData =req.body;
         const result = await bookingCollection.insertOne(bookingData);
         res.json(result);
     })
 
-    app.get('/booking/:userId',async(req,res)=>{
+    app.get('/booking/:userId',verifyToken,async(req,res)=>{
         const {userId} =req.params;
         const result = await bookingCollection.find({userId}).toArray();
         res.json(result);
@@ -82,7 +81,7 @@ async function run() {
         res.json(result);
     })
 
-    app.patch("/facility/:id",async(req,res)=>{
+    app.patch("/facility/:id",verifyToken,async(req,res)=>{
         const {id}=req.params
         const updatedData = req.body
 
@@ -92,19 +91,19 @@ async function run() {
         )
     })
 
-    app.delete('/facility/:id', async(req,res)=>{
+    app.delete('/facility/:id', verifyToken, async(req,res)=>{
         const {id}= req.params;
         const result = await facilityCollection.deleteOne({_id: new ObjectId(id)});
         res.json(result)
     })
 
-    app.delete('/booking/:bookingId', async(req,res)=>{
+    app.delete('/booking/:bookingId', verifyToken, async(req,res)=>{
         const {bookingId}= req.params;
         const result = await bookingCollection.deleteOne({_id: new ObjectId(bookingId)});
         res.json(result)
     })
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
