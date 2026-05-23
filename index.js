@@ -9,7 +9,14 @@ const uri = process.env.MONGODB_URI;
 const app = express();
 const PORT = process.env.PORT
 
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: [
+    "https://sportcoveclient.vercel.app",
+    "http://localhost:3000"
+  ],
+  credentials: true
+}));
 app.use(express.json())
 
 const client = new MongoClient(uri, {
