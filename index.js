@@ -10,29 +10,6 @@ const app = express();
 const PORT = process.env.PORT
 
 app.use(cors());
-// const allowedOrigins = [
-//     "https://sportcoveclient.vercel.app",
-//     "http://localhost:3000"
-// ];
-
-// app.use((req, res, next) => {
-//     const origin = req.headers.origin;
-
-//     if (allowedOrigins.includes(origin)) {
-//         res.header("Access-Control-Allow-Origin", origin);
-//     }
-
-//     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-//     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//     res.header("Access-Control-Allow-Credentials", "true");
-
-//     // Handle preflight
-//     if (req.method === "OPTIONS") {
-//         return res.sendStatus(200);
-//     }
-
-//     next();
-// });
 app.use(express.json())
 
 const client = new MongoClient(uri, {
@@ -133,6 +110,7 @@ async function run() {
                 { _id: new ObjectId(id) },
                 { $set: updatedData }
             )
+            res.json(result);
         })
 
         app.delete('/facility/:id', verifyToken, async (req, res) => {
